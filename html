@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>MyLibrary</title>
+</head>
+<style>
+    :root
+    {
+        --c-book: #a8703f;   /* 书的棕色 */
+        --c-movie: #3d5a80;  /* 电影的蓝色 */
+        --c-music: #d94f4f;  /* 音乐的红色 */
+        --c-game: #4a7c59;   /* 游戏的绿色 */
+    }
+
+    .card-grid
+    {
+        display: flex;
+        gap: 16px;
+        flex-wrap:wrap
+    }
+
+    .card
+    {
+        width:160px;
+        padding: 16px;
+        background: #faf8f5;
+        border: 1px solid #e8e2d9;
+        border-radius: 10px;
+    }
+
+    .card-cover 
+    {
+        height: 200px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--cover-color, #ccc);
+    }
+
+    .cover-initial
+    {
+        color: white;
+        font-size: 48px;
+        font-weight: bold;
+    }
+</style>
+
+<body>
+
+  <h1>MyLibrary</h1>
+  <div style="margin-bottom: 24px;">
+  <h1 style="margin-bottom: 8px;">我的收藏馆</h1>
+  <p style="color: #8a8179; margin-bottom: 24px;">共 12 条收藏</p>
+  
+  <input id="searchInput" type="text" placeholder="🔍搜索标题..." style="width: 100%; max-width: 300px; padding: 10px 14px; border: 1px solid #e8e2d9; border-radius: 8px; margin-bottom: 16px; outline: none;">
+  
+  <div style="display: flex; gap: 8px;">
+    <button id="all" style="padding: 6px 16px; border-radius: 20px; border: 1px solid #e8e2d9; background: #fff; cursor: pointer;">全部</button>
+    <button id="book" style="padding: 6px 16px; border-radius: 20px; border: 1px solid #e8e2d9; background: #fff; cursor: pointer;">书籍</button>
+    <button id="movie" style="padding: 6px 16px; border-radius: 20px; border: 1px solid #e8e2d9; background: #fff; cursor: pointer;">电影</button>
+    <button id="music" style="padding: 6px 16px; border-radius: 20px; border: 1px solid #e8e2d9; background: #fff; cursor: pointer;">音乐</button>
+    <button id="game" style="padding: 6px 16px; border-radius: 20px; border: 1px solid #e8e2d9; background: #fff; cursor: pointer;">游戏</button>
+  </div>
+</div>
+
+  <div class="card-grid">
+
+
+</div>
+
+<script>
+  const myCollection =
+  [
+    { title: "三体II：黑暗森林", type: "书籍", year: 2010, rating: 5, color: "var(--c-book)", initial: "三" },
+    { title: "生化危机：爆发夜", type: "电影", year: 2026, rating: 4, color: "var(--c-movie)", initial: "生" },
+    { title: "龙族II：悼亡者之瞳", type: "书籍", year: 2011, rating: 5, color: "var(--c-book)", initial: "龙" },
+    { title: "九州缥缈录II；苍云古齿", type: "书籍", year: 2005, rating: 5, color: "var(--c-book)", initial: "九" },
+    { title: "你的名字", type: "电影", year: 2016, rating: 5, color: "var(--c-movie)", initial: "你" },
+    { title: "刺客信条：影", type: "游戏", year: 2025, rating: 4, color: "var(--c-game)", initial: "刺" },
+    { title: "All We Are", type: "音乐", year: 2007, rating: 4, color: "var(--c-music)", initial: "A" },
+    { title: "天气之子", type: "电影", year: 2018, rating: 5, color: "var(--c-movie)", initial: "天" },
+    { title: "巫师3：狂猎", type: "游戏", year: 2015, rating: 3, color: "var(--c-game)", initial: "巫" },
+    { title: "海阔天空", type: "音乐", year: 1993, rating: 5, color: "var(--c-music)", initial: "海" },
+    { title: "肖申克的救赎", type: "电影", year: 1998, rating: 5, color: "var(--c-movie)", initial: "肖" },
+    { title: "侠盗猎车手V", type: "游戏", year: 2013, rating: 5, color: "var(--c-game)", initial: "侠" }
+
+  ];
+
+let currentKeyword = '';
+let currentType = 'all';
+
+function updateView()
+{
+  let result = myCollection;
+
+  if (currentType !== 'all')
+  {
+    result = result.filter(item => item.type === currentType);
+  }
+  if (currentKeyword !== '')
+  {
+    result = result.filter(item => item.title.toLowerCase().includes(currentKeyword)
+    );
+  }
+
+  renderCards(result);
+}
+
+const gridContainer = document.querySelector('.card-grid');
+const searchInput = document.getElementById('searchInput');
+
+function renderCards(dataArray) 
+{
+let htmlString = '';
+for (let i = 0; i < dataArray.length; i++)
+{
+  const item = dataArray[i];
+  htmlString += `
+    <div class="card" style="--cover-color: ${item.color};">
+      <div class="card-cover">
+        <span class="cover-initial">${item.initial}</span>
+      </div>
+      <h3 style="margin: 12px 0 4px;">${item.title}</h3>
+      <p style="margin: 0; color: #8a8179; font-size: 13px;">${item.type} · ${item.year}</p>
+      <div style="color: #d9a441; font-size: 13px; letter-spacing: 2px;">${'★'.repeat(item.rating)}${'☆'.repeat(5 - item.rating)}</div>
+    </div>
+  `;
+}
+gridContainer.innerHTML = htmlString;
+}
+updateView();
+
+searchInput.addEventListener('input', function(event)
+{
+  currentKeyword = event.target.value.toLowerCase();
+  updateView();
+});
+
+document.getElementById('all').addEventListener('click', function() 
+{
+  currentType = 'all';
+  updateView();
+});
+document.getElementById('book').addEventListener('click', function() 
+{
+  currentType = '书籍';
+  updateView();
+});
+document.getElementById('movie').addEventListener('click', function() 
+{
+  currentType = '电影';
+  updateView();
+});
+document.getElementById('music').addEventListener('click', function() 
+{
+  currentType = '音乐';
+  updateView();
+});
+document.getElementById('game').addEventListener('click', function() 
+{
+  currentType = '游戏';
+  updateView();
+});
+
+</script>
+</body>
+</html>
